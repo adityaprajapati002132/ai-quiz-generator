@@ -20,7 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="../frontend"), name="static")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "../frontend")
+
+if os.path.exists(FRONTEND_DIR):
+    app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 class QuizRequest(BaseModel):
     topic: str
@@ -31,7 +35,7 @@ class QuizRequest(BaseModel):
 async def generate_quiz(request: QuizRequest):
     token = os.getenv("GITHUB_TOKEN")
     print("Token found:", bool(token))
-    
+
     prompt = f"""Generate {request.num_questions} multiple choice questions about "{request.topic}" at {request.difficulty} difficulty level.
 
 Return ONLY a JSON array in this exact format with no extra text:
@@ -59,27 +63,31 @@ Return ONLY a JSON array in this exact format with no extra text:
             },
             timeout=60
         )
-    
+
     print("Status:", response.status_code)
     print("Response:", response.text[:500])
-    
+
     data = response.json()
-    
+
     if "choices" not in data:
         print("ERROR - no choices:", data)
         return {"error": str(data), "questions": []}
-    
+
     content = data["choices"][0]["message"]["content"]
     print("Content:", content[:200])
-    
+
     match = re.search(r'\[.*\]', content, re.DOTALL)
-    
+
     if not match:
         return {"error": "Could not parse questions", "questions": []}
-    
+
     questions = json.loads(match.group())
     return {"questions": questions, "topic": request.topic}
 
 @app.get("/")
 def root():
     return RedirectResponse(url="/static/index.html")
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
