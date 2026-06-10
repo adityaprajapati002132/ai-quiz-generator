@@ -41,7 +41,7 @@ async function fetchQuiz(topic, difficulty, num) {
     }, 700);
 
     try {
-        const res = await fetch('http://127.0.0.1:8000/generate-quiz', {
+        const res = await fetch('/generate-quiz', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ topic, difficulty, num_questions: num })
