@@ -30,6 +30,7 @@ class QuizRequest(BaseModel):
 @app.post("/generate-quiz")
 async def generate_quiz(request: QuizRequest):
     token = os.getenv("GITHUB_TOKEN")
+    print("Token found:", bool(token))
     
     prompt = f"""Generate {request.num_questions} multiple choice questions about "{request.topic}" at {request.difficulty} difficulty level.
 
@@ -59,12 +60,18 @@ Return ONLY a JSON array in this exact format with no extra text:
             timeout=60
         )
     
+    print("Status:", response.status_code)
+    print("Response:", response.text[:500])
+    
     data = response.json()
     
     if "choices" not in data:
+        print("ERROR - no choices:", data)
         return {"error": str(data), "questions": []}
     
     content = data["choices"][0]["message"]["content"]
+    print("Content:", content[:200])
+    
     match = re.search(r'\[.*\]', content, re.DOTALL)
     
     if not match:
