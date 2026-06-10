@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quiz Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="bg-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+
+    <div class="container">
+        <div class="screen active" id="setup-screen">
+            <div class="hero">
+                <div class="badge">✨ Powered by GPT-4o</div>
+                <h1>AI Quiz<br><span class="gradient-text">Generator</span></h1>
+                <p>Generate intelligent quizzes on any topic in seconds</p>
+            </div>
+            <div class="glass-card">
+                <div class="input-group">
+                    <label>Topic</label>
+                    <input type="text" id="topic" placeholder="e.g. BGMI, Python, World War II..." />
+                </div>
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label>Difficulty</label>
+                        <select id="difficulty">
+                            <option value="easy">🟢 Easy</option>
+                            <option value="medium" selected>🟡 Medium</option>
+                            <option value="hard">🔴 Hard</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Questions</label>
+                        <select id="num-questions">
+                            <option value="5">5 Questions</option>
+                            <option value="10">10 Questions</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="primary-btn" onclick="generateQuiz()">
+                    <span>Generate Quiz</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="screen" id="loading-screen">
+            <div class="loader-content">
+                <div class="ai-loader">
+                    <div class="pulse-ring"></div>
+                    <div class="pulse-ring delay1"></div>
+                    <div class="pulse-ring delay2"></div>
+                    <span>🧠</span>
+                </div>
+                <h2>Generating your quiz...</h2>
+                <p id="loading-text">Analyzing topic with AI</p>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            </div>
+        </div>
+
+        <div class="screen" id="quiz-screen">
+            <div class="quiz-header">
+                <div class="topic-tag" id="quiz-topic"></div>
+                <div class="progress-dots" id="progress-dots"></div>
+            </div>
+            <div class="question-card glass-card" id="question-container"></div>
+            <div class="quiz-nav">
+                <button class="nav-btn" onclick="prevQuestion()">← Back</button>
+                <span id="question-counter"></span>
+                <button class="nav-btn primary" id="next-btn" onclick="nextQuestion()">Next →</button>
+            </div>
+        </div>
+
+        <div class="screen" id="result-screen">
+            <div class="result-hero glass-card">
+                <div class="score-circle" id="score-circle">
+                    <span id="score-number"></span>
+                    <small>Score</small>
+                </div>
+                <h2 id="score-text"></h2>
+                <p id="score-sub"></p>
+            </div>
+            <div id="review-container"></div>
+            <button class="primary-btn" onclick="resetQuiz()">Try Another Quiz 🔄</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
