@@ -2,6 +2,7 @@ let questions = [];
 let currentQ = 0;
 let answers = [];
 let quizTopic = '';
+let quizDifficulty = 'medium';
 
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -16,12 +17,22 @@ async function generateQuiz() {
     if (!topic) { alert('Please enter a topic!'); return; }
 
     quizTopic = topic;
+    quizDifficulty = difficulty;
+    await fetchQuiz(topic, difficulty, num);
+}
+
+async function generateMore() {
+    await fetchQuiz(quizTopic, quizDifficulty, 5);
+}
+
+async function fetchQuiz(topic, difficulty, num) {
     showScreen('loading-screen');
 
     const texts = ['Analyzing topic with AI', 'Crafting questions...', 'Adding difficulty levels...', 'Almost ready!'];
     let i = 0;
     const fill = document.getElementById('progress-fill');
     const loadText = document.getElementById('loading-text');
+    fill.style.width = '0%';
     const interval = setInterval(() => {
         i++;
         fill.style.width = (i * 25) + '%';
@@ -137,6 +148,7 @@ function submitQuiz() {
 
 function resetQuiz() {
     questions = []; answers = []; currentQ = 0;
+    quizTopic = ''; quizDifficulty = 'medium';
     document.getElementById('topic').value = '';
     showScreen('setup-screen');
 }

@@ -79,7 +79,7 @@
 
         <div class="screen" id="result-screen">
             <div class="result-hero glass-card">
-                <div class="score-circle" id="score-circle">
+                <div class="score-circle">
                     <span id="score-number"></span>
                     <small>Score</small>
                 </div>
@@ -87,7 +87,10 @@
                 <p id="score-sub"></p>
             </div>
             <div id="review-container"></div>
-            <button class="primary-btn" onclick="resetQuiz()">Try Another Quiz 🔄</button>
+            <div class="result-buttons">
+                <button class="primary-btn" onclick="generateMore()">Generate More ⚡</button>
+                <button class="secondary-btn" onclick="resetQuiz()">New Topic 🔄</button>
+            </div>
         </div>
     </div>
 
