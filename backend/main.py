@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 import httpx
 import os
+import json
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -30,7 +33,7 @@ async def generate_quiz(request: QuizRequest):
     
     prompt = f"""Generate {request.num_questions} multiple choice questions about "{request.topic}" at {request.difficulty} difficulty level.
 
-Return ONLY a JSON array in this exact format:
+Return ONLY a JSON array in this exact format with no extra text:
 [
   {{
     "question": "question text here",
@@ -43,24 +46,33 @@ Return ONLY a JSON array in this exact format:
     async with httpx.AsyncClient() as client:
         response = await client.post(
             "https://models.inference.ai.azure.com/chat/completions",
-            headers={"Authorization": f"Bearer {token}"},
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            },
             json={
                 "model": "gpt-4o",
                 "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.7
+                "temperature": 0.7,
+                "max_tokens": 2000
             },
-            timeout=30
+            timeout=60
         )
     
     data = response.json()
+    
+    if "choices" not in data:
+        return {"error": str(data), "questions": []}
+    
     content = data["choices"][0]["message"]["content"]
-    
-    import json, re
     match = re.search(r'\[.*\]', content, re.DOTALL)
-    questions = json.loads(match.group())
     
+    if not match:
+        return {"error": "Could not parse questions", "questions": []}
+    
+    questions = json.loads(match.group())
     return {"questions": questions, "topic": request.topic}
 
 @app.get("/")
 def root():
-    return {"status": "AI Quiz Generator running"}
+    return RedirectResponse(url="/static/index.html")
